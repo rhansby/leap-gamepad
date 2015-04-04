@@ -1,5 +1,5 @@
 {
-  "name": "leapGamepad",
+  "name": "leap-gamepad",
   "version": "0.0.1",
   "description": "Converts Leap Motion input to mouse and keyboard input, specifically for use in video games.",
   "main": "main.js",
