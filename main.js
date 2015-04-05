@@ -10,6 +10,21 @@ function moveTowards(val, target, amount) {
     return val + (amount * dir);
 }
 
+function isCurled(hand, finger) {
+    var finger_dir = finger.direction;
+    var palm_dir = hand.direction;
+    var palm_normal = hand.palmNormal;
+    var threshhold = Math.PI/6;  //30 degrees
+    var right_angle = Math.PI/2; //90 degrees
+    //Angle between the finger and the palm normal
+    var fn_angle = Math.acos(Leap.vec3.dot(finger_dir, palm_normal));
+    //Angle between the finger and the palm direction
+    var fd_angle = Math.acos(Leap.vec3.dot(finger_dir, palm_dir));
+    //We check fd_angle > 90 to detect the condition where the user has curled their finger past the palm normal
+    return fn_angle < threshhold || fd_angle > right_angle;
+}
+
+
 //Camera benhavior variables
 var sensitivityX = 0.09;
 var sensitivityY = 0.0725;
@@ -54,8 +69,8 @@ controller.loop(function(frame) {
 
             //Add a scaling factor on downwards motion to compensate for reduced range of motion
             if (posY < centerY) {
-                var min_scale = 2;
-                var max_scale = 4.5;
+                var min_scale = 1.6;
+                var max_scale = 4.2;
                 var y_max = centerY - y_box_width;
                 var scale = min_scale + (max_scale - min_scale) * (posY - y_max)/(-y_max);
                 posY *= 1/scale;
@@ -64,9 +79,8 @@ controller.loop(function(frame) {
 
         robot.moveMouse(mouse.x + (posX * sensitivityX), mouse.y + ((centerY - posY) * sensitivityY));
 
-
         //Check for a trigger pull gesture
-        if (!hand.indexFinger.extended || !hand.middleFinger.extended) {
+        if (isCurled(hand, hand.indexFinger)) {
             if (!bangEventEmitted) {
                 console.log('BANG!!!');
                 robot.mouseClick();
