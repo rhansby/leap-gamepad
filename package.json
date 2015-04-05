@@ -5,6 +5,7 @@
   "main": "main.js",
   "dependencies": {
     "leapjs": "^0.6.4",
+    "NodObjC": "~1.0.0",
     "robotjs": "^0.1.1"
   },
   "scripts": {
