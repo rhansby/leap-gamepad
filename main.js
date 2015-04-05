@@ -5,9 +5,11 @@ var ObjC = require('NodObjC');
 var isCSS = true; // Lol such hack
 
 var grenadeKey = isCSS ? 21 : 5; // 21 = the key 4, 5 = the key g
+var knifeKey  = isCSS ? 20: 35; // 21 = the key 3, 35 = the p key
 var pistolKey = 19; // the key 2
 
 var bangEventEmitted = false;
+var previousPosZ = 30;
 
 var weapon = {
     INVALID: 0,
@@ -124,12 +126,11 @@ controller.loop(function(frame) {
     var clenched = [hand.indexFinger, hand.middleFinger, hand.ringFinger, hand.pinky].every(function(f) {
         return !f.extended;
     });
+    var openHand = [hand.indexFinger, hand.middleFinger, hand.ringFinger, hand.pinky].every(function(f) {
+        return f.extended;
+    });
 
     if(curWeapon === weapon.GRENADE) {
-        var openHand = [hand.indexFinger, hand.middleFinger, hand.ringFinger, hand.pinky].every(function(f) {
-            return f.extended;
-        });
-
         if(openHand) {
             console.log('fire in the hole!!!!!!');
             robot.mouseClick();
@@ -148,6 +149,26 @@ controller.loop(function(frame) {
         tapKey(grenadeKey);
         curWeapon = weapon.GRENADE;
         return; // Already changed modes this frame
+    }
+
+    // Are we entering knife mode?
+    if(palmDown && openHand && curWeapon !== weapon.KNIFE) {
+        console.log('KNIFE KNIFE KNIFE');
+        tapKey(knifeKey);
+        curWeapon = weapon.KNIFE;
+        return; // Already changed modes this frame
+    }
+
+    if(palmDown && openHand && curWeapon === weapon.KNIFE) {
+        var delta = hand.palmPosition[2] - previousPosZ;
+        previousPosZ = hand.palmPosition[2];
+
+        if(delta < -5) {
+            console.log("STABBITY STABBITY STAB");
+            robot.mouseClick();
+        }
+
+        return;
     }
 
     // If no other weapon was selected, equip the gun
