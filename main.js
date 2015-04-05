@@ -151,14 +151,6 @@ controller.loop(function(frame) {
         return; // Already changed modes this frame
     }
 
-    // Are we entering knife mode?
-    if(palmDown && openHand && curWeapon !== weapon.KNIFE) {
-        console.log('KNIFE KNIFE KNIFE');
-        tapKey(knifeKey);
-        curWeapon = weapon.KNIFE;
-        return; // Already changed modes this frame
-    }
-
     if(palmDown && openHand && curWeapon === weapon.KNIFE) {
         var delta = hand.palmPosition[2] - previousPosZ;
         previousPosZ = hand.palmPosition[2];
@@ -169,6 +161,14 @@ controller.loop(function(frame) {
         }
 
         return;
+    }
+
+    // Are we entering knife mode?
+    if(palmDown && openHand && curWeapon !== weapon.KNIFE) {
+        console.log('KNIFE KNIFE KNIFE');
+        tapKey(knifeKey);
+        curWeapon = weapon.KNIFE;
+        return; // Already changed modes this frame
     }
 
     // If no other weapon was selected, equip the gun
