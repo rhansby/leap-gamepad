@@ -55,7 +55,7 @@ function isCurled(hand, finger) {
     var finger_dir = finger.direction;
     var palm_dir = hand.direction;
     var palm_normal = hand.palmNormal;
-    var threshhold = Math.PI/6;  //30 degrees
+    var threshhold = 7*Math.PI/36;  //35 degrees
     var right_angle = Math.PI/2; //90 degrees
     //Angle between the finger and the palm normal
     var fn_angle = Math.acos(Leap.vec3.dot(finger_dir, palm_normal));
@@ -72,7 +72,7 @@ var sensitivityY = 0.0725;
 var centerX = 0;
 var x_box_width = 12.5;
 
-var centerY = 220;
+var centerY = 205;
 var y_box_width = 15;
 
 var x_safe = [centerX - x_box_width, centerX + x_box_width]
