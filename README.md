@@ -17,4 +17,9 @@ We implemented several gameplay gestures:
 How it works:
 We used a local node.js server and the Leap.js framework to interface with the Leap Motion and track movements and recognize gestures. The server would then dispatch the appropriate keyboard and mouse click events to the operating system which would be then received by any game the user is running.
 
-Note: Only works on OS X at the moment.
+Works on OS X and Windows.
+
+####To Build:
+* Clone the repo
+* Run npm install in the cloned directory. There may be some errors on Windows, ignore them.
+* For Windows users: Cd into the win_input directory and run node-gyp build (can this be done automatically?).
