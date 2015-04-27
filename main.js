@@ -73,7 +73,7 @@ controller.loop(function(frame) {
     var hand = frame.hands[0];
 
     //Update camera position
-    var posX = hand.stabilizedPalmPosition[0];/
+    var posX = hand.stabilizedPalmPosition[0];
     var posY = hand.stabilizedPalmPosition[1];
 
     if (posX > x_safe[0] && posX < x_safe[1]) {
@@ -157,7 +157,6 @@ controller.loop(function(frame) {
     if(curWeapon !== weapon.GUN) {
         console.log('gun select');
         input.tapKey(pistolKey);
-        //input.leftClick();
         curWeapon = weapon.GUN;
     }
 
