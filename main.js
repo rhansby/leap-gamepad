@@ -1,12 +1,20 @@
 var Leap = require('leapjs');
-var robot = require('robotjs');
-var ObjC = require('NodObjC');
+
+/*
+ * Wrapper of platform specific input generation
+ * 3 functions are provided:
+ *   * tapKey(char a): Issues the given character being pressed on the keyboard.
+ *   * leftClick(): Issues a click of the left mouse button.
+ *   * moveMouse(dx, dy): Changes the current mouse position by dx, dy.
+ */
+
+var input = require("./input");
 
 var isCSS = true; // Lol such hack
 
-var grenadeKey = isCSS ? 21 : 5; // 21 = the key 4, 5 = the key g
-var knifeKey  = isCSS ? 20: 35; // 21 = the key 3, 35 = the p key
-var pistolKey = 19; // the key 2
+var grenadeKey = isCSS ? '4' : 'g';
+var knifeKey  = isCSS ? '3' : 'p';
+var pistolKey = '2';
 
 var bangEventEmitted = false;
 var previousPosZ = 30;
@@ -19,31 +27,6 @@ var weapon = {
 }
 var curWeapon = weapon.INVALID;
 
-var tapKey = (function() {
-    ObjC.framework('Cocoa');
-    ObjC.framework('Foundation');
-
-    var keyMap = {};
-
-    // Calling ObjC.CFRelease keeps crashing, so
-    // we'll just cache all key events we create and reuse them
-    // without ever freeing the memory
-    return function(key) {
-        var events = keyMap[key];
-
-        if(!events) {
-            events = {
-                down: ObjC.CGEventCreateKeyboardEvent(null, key, true),
-                up  : ObjC.CGEventCreateKeyboardEvent(null, key, false),
-            };
-
-            keyMap[key] = events;
-        }
-
-        ObjC.CGEventPost(ObjC.kCGHIDEventTap, events.down);
-        ObjC.CGEventPost(ObjC.kCGHIDEventTap, events.up);
-    }
-})();
 
 // Move value towards the target by the specfied amount
 function moveTowards(val, target, amount) {
@@ -87,7 +70,6 @@ controller.loop(function(frame) {
         return;
     }
 
-    var mouse = robot.getMousePos();
     var hand = frame.hands[0];
 
     //Update camera position
@@ -118,7 +100,7 @@ controller.loop(function(frame) {
         }
     }
 
-    robot.moveMouse(mouse.x + (posX * sensitivityX), mouse.y + ((centerY - posY) * sensitivityY));
+    input.moveMouse(posX * sensitivityX, (centerY - posY) * sensitivityY);
 
     // Start of gesture checking
     var palmSideways = Math.abs(hand.palmNormal[0]) > 0.75;
@@ -133,7 +115,7 @@ controller.loop(function(frame) {
     if(curWeapon === weapon.GRENADE) {
         if(openHand) {
             console.log('fire in the hole!!!!!!');
-            robot.mouseClick();
+            input.leftClick();
             curWeapon = weapon.INVALID;
 
             controller.disconnect();
@@ -146,7 +128,7 @@ controller.loop(function(frame) {
     // Are we about to go into grenade mode?
     if (palmSideways && clenched) {
         console.log('grenade mode!');
-        tapKey(grenadeKey);
+        input.tapKey(grenadeKey);
         curWeapon = weapon.GRENADE;
         return; // Already changed modes this frame
     }
@@ -157,7 +139,7 @@ controller.loop(function(frame) {
 
         if(delta < -5) {
             console.log("STABBITY STABBITY STAB");
-            robot.mouseClick();
+            input.leftClick();
         }
 
         return;
@@ -166,7 +148,7 @@ controller.loop(function(frame) {
     // Are we entering knife mode?
     if(palmDown && openHand && curWeapon !== weapon.KNIFE) {
         console.log('KNIFE KNIFE KNIFE');
-        tapKey(knifeKey);
+        input.tapKey(knifeKey);
         curWeapon = weapon.KNIFE;
         return; // Already changed modes this frame
     }
@@ -174,8 +156,8 @@ controller.loop(function(frame) {
     // If no other weapon was selected, equip the gun
     if(curWeapon !== weapon.GUN) {
         console.log('gun select');
-        tapKey(pistolKey);
-        robot.mouseClick();
+        input.tapKey(pistolKey);
+        input.leftClick();
         curWeapon = weapon.GUN;
     }
 
@@ -183,7 +165,7 @@ controller.loop(function(frame) {
     if (palmDown && isCurled(hand, hand.indexFinger)) {
         if (!bangEventEmitted) {
             console.log('BANG!!!');
-            robot.mouseClick();
+            input.leftClick();
             bangEventEmitted = true;
         }
     } else {
