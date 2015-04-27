@@ -3,10 +3,12 @@
   "version": "0.0.1",
   "description": "Converts Leap Motion input to mouse and keyboard input, specifically for use in video games.",
   "main": "main.js",
-  "dependencies": {
-    "leapjs": "^0.6.4",
+  "optionalDependencies": {
     "NodObjC": "~1.0.0",
-    "robotjs": "^0.1.1"
+    "robotjs": "^0.1.1",
+  },
+  "dependencies": {
+    "leapjs": "^0.6.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
