@@ -1,8 +1,3 @@
-var letters = "123456";
-for (var i = 0; i < letters.length; i += 1) {
-//	input.tapKey(letters[i]);
-}
-
 var mac_tapKey_init = (function() {
 	var robot = require('robotjs');
 	var ObjC = require('NodObjC');
@@ -26,6 +21,10 @@ var mac_tapKey_init = (function() {
     // without ever freeing the memory
     return function(key) {
     	var code = charMap[key];
+
+    	if (!code) {
+    		throw new Error("Key code not defined for: " + key);
+    	}
 
         var events = keyMap[code];
 
@@ -63,7 +62,7 @@ function mac_moveMouse(dx, dy) {
 		var win_input = require("./win_input/build/Release/win_input");
 		module.exports.tapKey = win_input.tapKey;
 		module.exports.leftClick = win_input.leftClick;
-		module.exports.moveMouse = function() { throw new Error("Not yet implemented"); };
+		module.exports.moveMouse = win_input.moveMouse;
 	}
 	//Other
 	else {

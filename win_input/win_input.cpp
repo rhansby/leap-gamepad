@@ -92,9 +92,48 @@ void leftClick(const FunctionCallbackInfo<Value>& args) {
     SendInput(1, &ip, sizeof(INPUT));
 }
 
+void moveMouse(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = Isolate::GetCurrent();
+    HandleScope scope(isolate);
+
+    if (args.Length() < 2) {
+        isolate->ThrowException(Exception::TypeError(
+            String::NewFromUtf8(isolate, "Wrong number of arguments")));
+        return;
+    }
+
+    if (!args[0]->IsNumber() || !args[1]->IsNumber()) {
+        isolate->ThrowException(Exception::TypeError(
+            String::NewFromUtf8(isolate, "Wrong arguments")));
+        return;
+    }
+
+    int32_t dx = (int32_t)args[0]->Uint32Value();
+    int32_t dy = (int32_t)args[1]->Uint32Value();
+
+    INPUT ip;
+
+    // Set up a generic mouse event.
+    ip.type = INPUT_MOUSE;
+    ip.mi.dx = dx;
+    ip.mi.dy = dy;
+
+    ip.mi.mouseData = 0;
+    ip.mi.time = 0;
+    ip.mi.dwExtraInfo = 0;
+
+    ip.mi.dwFlags = MOUSEEVENTF_MOVE; //The mouse was moved
+    SendInput(1, &ip, sizeof(INPUT));
+
+    //Release the mouse
+    ip.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+    SendInput(1, &ip, sizeof(INPUT));
+}
+
 void Init(Handle<Object> exports) {
     NODE_SET_METHOD(exports, "tapKey", tapKey);
     NODE_SET_METHOD(exports, "leftClick", leftClick);
+    NODE_SET_METHOD(exports, "moveMouse", moveMouse);
 }
 
 NODE_MODULE(win_input, Init)
