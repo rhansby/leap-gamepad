@@ -1,6 +1,6 @@
 var mac_tapKey_init = (function() {
-	var robot = require('robotjs');
-	var ObjC = require('NodObjC');
+    var robot = require('robotjs');
+    var ObjC = require('NodObjC');
 
     ObjC.framework('Cocoa');
     ObjC.framework('Foundation');
@@ -44,7 +44,7 @@ var mac_tapKey_init = (function() {
 
 function mac_moveMouse(dx, dy) {
 	var mouse_pos = robot.getMousePos();
-	robot.moveMouse(mouse.x + dx, mouse.y + dy);
+	robot.moveMouse(mouse_pos.x + dx, mouse_pos.y + dy);
 }
 
 (function() {
